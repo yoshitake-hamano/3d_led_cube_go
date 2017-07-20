@@ -1,7 +1,6 @@
 package led_cube_go
 
 import (
-	"encoding/base64"
 	"log"
 	"net"
 )
@@ -52,21 +51,21 @@ func Clear() {
 }
 
 func Show() {
-	tcpAddr, err := net.ResolveTCPAddr("tcp", ledUrl)
+	tcpAddr, err := net.ResolveUDPAddr("udp", ledUrl)
 	if err != nil {
 		log.Fatalf("error: %s", err.Error())
 		return
 	}
-	conn, err := net.DialTCP("tcp", nil, tcpAddr)
+	conn, err := net.DialUDP("udp", nil, tcpAddr)
 	if err != nil {
 		log.Fatalf("error: %s", err.Error())
 		return
 	}
 	defer conn.Close()
 	sem <- struct{}{}
-	enc := base64.StdEncoding.EncodeToString(ledBuffer)
+	udpBuffer := rgb888toRGB565(ledBuffer)
 	<-sem
-	conn.Write([]byte(enc))
+	conn.Write(udpBuffer)
 }
 
 func getUrl() string {
@@ -75,4 +74,22 @@ func getUrl() string {
 
 func getLedBuffer() []byte {
 	return ledBuffer
+}
+
+func rgb888toRGB565(rgb888 []byte) []byte {
+	const RGB888_RGB_SIZE = 3
+	const RGB565_RGB_SIZE = 2
+
+	lengthOfRGB888 := len(rgb888)
+	lengthOfRGB565 := lengthOfRGB888 / RGB888_RGB_SIZE * RGB565_RGB_SIZE
+	rgb565 := make([]byte, lengthOfRGB565)
+	for i := 0; i < len(rgb888); i += RGB888_RGB_SIZE {
+		r := rgb888[i]
+		g := rgb888[i+1]
+		b := rgb888[i+2]
+		indexOfRGB565 := i / RGB888_RGB_SIZE * RGB565_RGB_SIZE
+		rgb565[indexOfRGB565] = r&0xF8 + g>>5
+		rgb565[indexOfRGB565+1] = g&0x1C + b>>3
+	}
+	return rgb565
 }

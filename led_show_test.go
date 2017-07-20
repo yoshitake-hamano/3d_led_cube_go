@@ -5,7 +5,7 @@ import (
 )
 
 const LED_URL = "127.0.0.1:9001"
-const SHOW_TIMES = 100
+const SHOW_TIMES = 10000
 
 func TestSetZero(t *testing.T) {
 	showSingleColor(0)
