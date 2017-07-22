@@ -52,14 +52,14 @@ func showSingleColor(rgb int) {
 ## Run sample
 
 ```
-$ cd <<3d_led_cube_receiver>>/make/receiver &
+$ <<3d_led_cube_receiver>>/make/receiver &
 $ go run
 ```
 
 ## How to execute 3d_led_cube_go's unit test
 
 ```
-$ cd <<3d_led_cube_receiver>>/make/receiver &
+$ <<3d_led_cube_receiver>>/make/receiver &
 $ cd <<3d_led_cube_go>>
 $ go test -v
 === RUN   TestSetZero
